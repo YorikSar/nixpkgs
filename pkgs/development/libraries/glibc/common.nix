@@ -4,12 +4,14 @@
 { stdenv, lib
 , buildPlatform, hostPlatform
 , buildPackages
+, substituteAll
 , fetchurl
 , linuxHeaders ? null
 , gd ? null, libpng ? null
 }:
 
 { name
+, shPackage ? null
 , withLinuxHeaders ? false
 , profilingLibraries ? false
 , installLocales ? false
@@ -88,7 +90,12 @@ stdenv.mkDerivation ({
        */
       ./allow-kernel-2.6.32.patch
     ]
-    ++ lib.optional stdenv.isx86_64 ./fix-x64-abi.patch;
+    ++ lib.optional stdenv.isx86_64 ./fix-x64-abi.patch
+    ++ lib.optional (shPackage != null)
+      (substituteAll {
+        src = ./custom-shell.patch;
+        shell = "${shPackage}/bin/sh";
+      });
 
   postPatch =
     # Needed for glibc to build with the gnumake 3.82
