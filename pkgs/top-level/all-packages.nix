@@ -19002,7 +19002,8 @@ with pkgs;
   micropolis = callPackage ../games/micropolis { };
 
   minecraft = callPackage ../games/minecraft {
-    useAlsa = config.minecraft.alsa or false;
+    gconf = gnome2.GConf;
+    pulseSupport = config.pulseaudio or true;
   };
 
   minecraft-server = callPackage ../games/minecraft-server { };
